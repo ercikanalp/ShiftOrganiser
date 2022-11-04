@@ -1,14 +1,22 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Generate {
     private static ArrayList<Employee> firstShifters;
     private static ArrayList<Employee> secondShifters;
     private static ArrayList<Employee> nightShifters;
-    private static ArrayList<Employee> employees;
+    private static  ArrayList<Employee> employees;
+
+    private static  String[] names;
+
 
     public Generate(ArrayList<Employee> employees) {
         this.employees = employees;
+        // Copy employees list into another arraylist
+        names = new String[employees.size()];
+        for (int i = 0; i < employees.size(); i++) {
+            names[i] = employees.get(i).getName();
+        }
+
     }
 
     public void generate() {
@@ -30,12 +38,8 @@ public class Generate {
         for (int i = 0; i < employees.size(); i++) {
             employees.remove(i);
         }
-        // Print nightshifters
-        System.out.println("Night Shifters: ");
-        for (Employee employee : nightShifters) {
-            System.out.print(employee.getName() + " ");
-        }
-        System.out.println();
+        // Make sure every employee takes a day off in the week
+        
         ShiftDay day2 = generateShiftDay(2);
         ShiftDay day3 = generateShiftDay(3);
         ShiftDay day4 = generateShiftDay(4);
@@ -89,6 +93,12 @@ public class Generate {
             }
             printDaily(shift1, shift2, shift3);
             // Add the shifts to the shiftDays.
+            System.out.println("Off day takers: ");
+            for(Employee employee : employees){
+                System.out.print(employee.getName() + " ");
+            }
+            System.out.println();
+            System.out.println("------------------------------------------------------------------------");
             return getShiftDay(shift1, shift2, shift3);
         }
         if (dayNumber == 2 || dayNumber == 5) {
@@ -119,7 +129,25 @@ public class Generate {
             // Print employees in shift1, shift2, shift3.
             printDaily(shift1, shift2, shift3);
             // Add the shifts to the shiftDays.
-            return getShiftDay(shift1, shift2, shift3);
+            System.out.println("Off day takers: ");
+            // Create an arraylist and copy  array names in it
+            ArrayList<String> offDayTakers = new ArrayList<>();
+            for(String name : names){
+                offDayTakers.add(name);
+            }
+            ShiftDay day = getShiftDay(shift1, shift2, shift3);
+            String [] dailyNames = day.getNames();
+            // Compare offDayTakers and dailyNames, remove the names in dailyNames from offDayTakers.
+            for(String name : dailyNames){
+                offDayTakers.remove(name);
+            }
+            // Print offDayTakers.
+            for(String name : offDayTakers){
+                System.out.print(name + " ");
+            }
+            System.out.println();
+            System.out.println("------------------------------------------------------------------------");
+            return day;
         } else {
             System.out.println("Day " + dayNumber);
             shift1 = new Shift(3, 1);
@@ -148,6 +176,26 @@ public class Generate {
             // Print employees in shift1, shift2, shift3.
             printDaily(shift1, shift2, shift3);
             // Add the shifts to the shiftDays.
+            System.out.println("Off day takers: ");
+            // Create an arraylist and copy  array names in it
+            ArrayList<String> offDayTakers = new ArrayList<>();
+            for(String name : names){
+                offDayTakers.add(name);
+            }
+            ShiftDay day = getShiftDay(shift1, shift2, shift3);
+            String [] dailyNames = day.getNames();
+            // Compare offDayTakers and dailyNames, remove the names in dailyNames from offDayTakers.
+            for(String name : dailyNames){
+                offDayTakers.remove(name);
+            }
+            // Print offDayTakers.
+            for(String name : offDayTakers){
+                System.out.print(name + " ");
+            }
+            System.out.println();
+
+
+            System.out.println("------------------------------------------------------------------------");
             return getShiftDay(shift1, shift2, shift3);
         }
 
@@ -179,30 +227,32 @@ public class Generate {
         }
     }
 
-    public void printTable(String[][] table) {
-        for (int i = 0; i < table.length; i++) {
-            for (int j = 0; j < table[i].length; j++) {
-                System.out.print(table[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
     private void printDaily(Shift shift1, Shift shift2, Shift shift3) {
         System.out.println("Shift 1: ");
         for (int i = 0; i < shift1.getEmployees().size(); i++) {
             System.out.print(shift1.getEmployees().get(i).getName() + " ");
         }
         System.out.println();
+        // Print the cleaner for shift1.
+        System.out.println("Cleaner for shift 1 : " + assignCleaners(shift1));
         System.out.println("Shift 2: ");
         for (int i = 0; i < shift2.getEmployees().size(); i++) {
             System.out.print(shift2.getEmployees().get(i).getName() + " ");
         }
         System.out.println();
+        System.out.println("Cleaner for shift 2 : " + assignCleaners(shift2));
         System.out.println("Shift 3: ");
         for (int i = 0; i < shift3.getEmployees().size(); i++) {
             System.out.print(shift3.getEmployees().get(i).getName() + " ");
         }
         System.out.println();
+        System.out.println("Cleaner for shift 3 : " + assignCleaners(shift3));
+    }
+
+    private String assignCleaners(Shift shift){
+        // Randomly choose an employee from the shift to be the cleaner.
+        int randomIndex = (int) (Math.random() * shift.getEmployees().size());
+        Employee cleaner = shift.getEmployees().get(randomIndex);
+        return cleaner.getName();
     }
 }
